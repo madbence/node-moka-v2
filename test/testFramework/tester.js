@@ -64,8 +64,8 @@ testSuite.prototype=
 	},
 	'fail': function(msg)
 	{
-		this.fail++;
-		this.errorMessages.push(msg);
+		this.failed++;
+		this.errorMessages.push(msg.replace(/\n/g, '\\n'));
 		process.stdout.write('F');
 	},
 	'success': function()
