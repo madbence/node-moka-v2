@@ -6,6 +6,7 @@ var testSuite=function(name, expect, environment, callback)
 	this.environment=environment;
 	this.passed=0;
 	this.failed=0;
+	this.errorMessages=[];
 	this.run();
 }
 
@@ -15,7 +16,7 @@ testSuite.prototype=
 	{
 		if(!actual)
 		{
-			this.fail();
+			this.fail('\''+actual+'\' is not true.');
 		}
 		else
 		{
@@ -26,7 +27,7 @@ testSuite.prototype=
 	{
 		if(actual != expected)
 		{
-			this.fail();
+			this.fail('\''+actual+'\' is not the expected \''+expected+'\'.');
 		}
 		else
 		{
@@ -53,10 +54,18 @@ testSuite.prototype=
 			this.environment['tearDown'].call(this);
 		}
 		process.stdout.write('\n');
+		if(this.errorMessages.length)
+		{
+			for(var i=0;i<this.errorMessages.length;i++)
+			{
+				process.stdout.write(this.errorMessages[i]+'\n');
+			}
+		}
 	},
-	'fail': function()
+	'fail': function(msg)
 	{
 		this.fail++;
+		this.errorMessages.push(msg);
 		process.stdout.write('F');
 	},
 	'success': function()
