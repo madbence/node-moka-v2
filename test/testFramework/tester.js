@@ -73,7 +73,7 @@ testSuite.prototype=
 				process.stdout.write(this.errorMessages[i]+'\n');
 			}
 		}
-		if(this.passed<this.tests)
+		if(this.passed!=this.tests)
 		{
 			if(!this.failed)
 			{
@@ -95,7 +95,7 @@ testSuite.prototype=
 	'error': function(e)
 	{
 		process.stdout.write('E');
-		console.log(e);
+		this.errorMessages.push(e.toString());
 	}
 };
 
