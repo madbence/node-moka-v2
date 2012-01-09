@@ -20,6 +20,10 @@ var IRC=
 	{
 		return this.nick(name)+this.user(name);
 	},
+	'mode': function(channel, mode, params)
+	{
+		return this.command('MODE', channel+(mode?(' '+mode+(params?(' '+params):'')):''));
+	},
 }
 
 exports.IRC=IRC;
