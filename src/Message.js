@@ -24,7 +24,14 @@ Message.prototype=
 	{
 		return this.getResponse().search(/^\d{3}$/) != -1;
 	},
-	
+	'getNumericResponse': function()
+	{
+		if(!this.isNumericResponse())
+		{
+			throw new Error('Response is not a numeric response');
+		}
+		return parseInt(this.getResponse);
+	},
 }
 
 exports.Message=Message;
