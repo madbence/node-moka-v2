@@ -1,6 +1,6 @@
-var server=process.argv[1]||'atw.irc.hu';
-var port=process.argv[2]||6669;
-var listen=process.argv[3]||1337;
+var server=process.argv[2]||'atw.irc.hu';
+var port=process.argv[3]||6669;
+var listen=process.argv[4]||1337;
 
 var net = require('net');
 
@@ -11,7 +11,7 @@ process.stdout.setEncoding('utf8');
 process.stdin.on('data', function(data)
 {
 	f.write(data);
-}
+});
 
 var f=net.connect(port, server, function(succ)
 {
