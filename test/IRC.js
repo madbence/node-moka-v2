@@ -12,3 +12,9 @@ new testSuite('IRC nick', 2, null, function()
 	this.equal(IRC.nick('test'), 'NICK test\n');
 	this.equal(IRC.nick('test'), IRC.command('NICK', 'test'));
 });
+
+new testSuite('IRC user', 2, null, function()
+{
+	this.equal(IRC.user('test'), 'USER test 0 * :...\n');
+	this.equal(IRC.user('test'), IRC.command('USER', 'test 0 * :...'));
+});
