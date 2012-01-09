@@ -24,29 +24,39 @@ var IRC=
 	{
 		return this.command('MODE', channel+(mode?(' '+mode+(params?(' '+params):'')):''));
 	},
-	'directionStringToArray': function(direction)
+	'directionStringToMode': function(mode, direction)
 	{
-		if(!this.validDirectionString(direction))
+		if(!this.isValidDirectionString(direction))
 		{
 			throw new Error('Direction strings length must be 1, 2 or 3, and can contain only + and -');
 		}
+		if(!this.isValidMode(mode))
+		{
+			throw new Error('Invalid mode');
+		}
+		var modeString='';
+		for(var i=0;i<direction.length;i++)
+		{
+			if(!i || (i && direction.charAt(i)!=direction.charAt(i-1)))
+			{
+				modeString+=direction.charAt(i);
+			}
+			modeString+=mode;
+		}
+		return modeString;
 	},
 	'isValidDirectionString': function(string)
 	{
 		return string.search(/^[\+-]{1,3}$/) != -1;
 	},
-	'op': function(channel, users)
+	'isValidMode': function(string)
 	{
-		if(users.length)
-		{
-			return this.opUsers(channel, users);
-		}
-		return this.mode(channel, '+o', users);
+		return string.length==1;
 	},
-	'opUsers': function(channel, users)
+	'op': function(channel, user)
 	{
-		
-	}
+		return this.mode(channel, '+o', user);
+	},
 }
 
 exports.IRC=IRC;

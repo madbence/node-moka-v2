@@ -34,6 +34,18 @@ testSuite.prototype=
 			this.success();
 		}
 	},
+	'throws': function(callback)
+	{
+		try
+		{
+			callback();
+			this.fail('Exception was not thrown.');
+		}
+		catch(e)
+		{
+			this.success();
+		}
+	},
 	'run': function()
 	{
 		process.stdout.write('Test ('+this.name+'): ');
@@ -59,6 +71,13 @@ testSuite.prototype=
 			for(var i=0;i<this.errorMessages.length;i++)
 			{
 				process.stdout.write(this.errorMessages[i]+'\n');
+			}
+		}
+		if(this.passed<this.tests)
+		{
+			if(!this.failed)
+			{
+				process.stdout.write(this.tests+' test was expected to pass, '+this.passed+' passed.\n');
 			}
 		}
 	},

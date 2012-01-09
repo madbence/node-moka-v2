@@ -50,15 +50,14 @@ new testSuite('IRC.isValidDirectionString', 14, null, function()
 	this.ok(IRC.isValidDirectionString('-+'));
 	this.ok(IRC.isValidDirectionString('--'));
 });
-/*
-new testSuite('IRC.op', 3, null, function()
+
+new testSuite('IRC.directionStringToMode', 2, null, function()
+{
+	this.equal(IRC.directionStringToMode('o', '++-'), '+oo-o');
+	this.equal(IRC.directionStringToMode('o', '+++'), '+ooo');
+});
+
+new testSuite('IRC.op', 1, null, function()
 {
 	this.equal(IRC.op('testChannel', 'testUser'), IRC.mode('testChannel', '+o', 'testUser'));
-	var testUsers=[];
-	for(var i=0;i<10;i++)
-	{
-		testUsers[i]='testUser'+i;
-	}
-	this.equal(IRC.op('testChannel', testUsers.slice(0,2)), IRC.mode('testChannel', '+oo', testUsers.slice(0,2).join(' ')));
-	this.equal(IRC.op('testChannel', testUsers.slice(0,3)), IRC.mode('testChannel', '+ooo', testUsers.slice(0,3).join(' ')));
-});*/
+});
