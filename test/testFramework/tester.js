@@ -1,19 +1,30 @@
-var test=function(name, expect, environment, callback)
+var testSuite=function(name, expect, environment, callback)
 {
 	this.name=name;
 	this.tests=expect;
-	this.callback;
+	this.callback=callback;
 	this.environment=environment;
-	this.run();
 	this.passed=0;
 	this.failed=0;
+	this.run();
 }
 
-test.prototype=
+testSuite.prototype=
 {
-	'ok': function(actual, expected)
+	'ok': function(actual)
 	{
-		if(actual!=expected)
+		if(!actual)
+		{
+			this.fail();
+		}
+		else
+		{
+			this.success();
+		}
+	},
+	'equal': function(actual, expected)
+	{
+		if(actual != expected)
 		{
 			this.fail();
 		}
@@ -25,7 +36,7 @@ test.prototype=
 	'run': function()
 	{
 		process.stdout.write('Test ('+this.name+'): ');
-		if(this.environment['setup'])
+		if(this.environment && this.environment['setup'])
 		{
 			this.environment['setup'].call(this);
 		}
@@ -37,7 +48,7 @@ test.prototype=
 		{
 			this.error(e);
 		}
-		if(this.environment['tearDown'])
+		if(this.environment && this.environment['tearDown'])
 		{
 			this.environment['tearDown'].call(this);
 		}
@@ -53,10 +64,11 @@ test.prototype=
 		this.passed++;
 		process.stdout.write('.');
 	},
-	'error': function()
+	'error': function(e)
 	{
 		process.stdout.write('E');
+		console.log(e);
 	}
 };
 
-exports.test=test;
+exports.testSuite=testSuite;
