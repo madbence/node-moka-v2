@@ -21,6 +21,8 @@ var env=
 		this.messages.push(new Message(':server 266 bot_nickname 64338 80253 :Current global users 64338, max 80253'));
 		this.messages.push(new Message(':server 375 bot_nickname :- server Message of the Day -'));
 		this.messages.push(new Message(':server 372 bot_nickname :- 16/1/2008 7:42'));
+		this.messages.push(new Message(':nick!user@host PRIVMSG #channel :message'));
+		this.messages.push(new Message(':nick!user@host PRIVMSG target :message'));
 	}
 }
 new testSuite('Message.getOrigin', 2, env, function()
@@ -44,3 +46,15 @@ new testSuite('Message.isNumericResponse', 4, env, function()
 	this.equal(this.messages[3].isNumericResponse(),false);
 	this.equal(this.messages[4].isNumericResponse(),true);
 });
+
+new testSuite('Message.getNumericResponse', 3, env, function()
+{
+	this.throws(function()
+	{
+		this.message[0].getNumericResponse();
+	});
+	this.equal(this.messages[1].getNumericResponse(), 20);
+	this.equal(this.messages[2].getNumericResponse(), 1);
+});
+
+//new testSuite('Message.isServerMessage', 3, 

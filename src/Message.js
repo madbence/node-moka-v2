@@ -30,8 +30,12 @@ Message.prototype=
 		{
 			throw new Error('Response is not a numeric response');
 		}
-		return parseInt(this.getResponse);
+		return this.parseNumericResponse(this.getResponse());
 	},
+	'parseNumericResponse': function(string)
+	{
+		return parseInt(string.replace(/^0*/, ''));
+	}
 }
 
 exports.Message=Message;
