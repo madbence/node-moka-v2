@@ -57,6 +57,18 @@ var IRC=
 	{
 		return this.mode(channel, '+o', user);
 	},
+	'join': function(channels, keys)
+	{
+		if(channels instanceof Array)
+		{
+			channels=channels.join(',');
+		}
+		if(keys instanceof Array)
+		{
+			keys=keys.join(',');
+		}
+		return this.command('JOIN', channels+(keys?' '+keys:''));
+	}
 }
 
 exports.IRC=IRC;
