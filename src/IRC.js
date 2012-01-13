@@ -57,24 +57,23 @@ var IRC=
 	{
 		return this.mode(channel, '+o', user);
 	},
+	'paramToString': function(a)
+	{
+		if(a instanceof Array)
+		{
+			return a.join(',');
+		}
+		return a;
+	},
 	'join': function(channels, keys)
 	{
-		if(channels instanceof Array)
-		{
-			channels=channels.join(',');
-		}
-		if(keys instanceof Array)
-		{
-			keys=keys.join(',');
-		}
+		channels=this.paramToString(channels);
+		keys=this.paramToString(keys);
 		return this.command('JOIN', channels+(keys?' '+keys:''));
 	},
 	'leave': function(channels, message)
 	{
-		if(channels instanceof Array)
-		{
-			channels=channels.join(',');
-		}
+		channels=this.paramToString(channels);
 		return this.command('PART', channels+(message?' :'+message:''));
 	},
 	'quit': function(message)
