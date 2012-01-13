@@ -80,6 +80,10 @@ var IRC=
 	'quit': function(message)
 	{
 		return this.command('QUIT', message?':'+message:null);
+	},
+	'topic': function(channel, newTopic)
+	{
+		return this.command('TOPIC', channel+(newTopic?' :'+newTopic:''));
 	}
 }
 

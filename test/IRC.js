@@ -82,3 +82,9 @@ new testSuite('IRC.quit', 2, null, function()
 	this.equal(IRC.quit(), IRC.command('QUIT'));
 	this.equal(IRC.quit('message'), IRC.command('QUIT', ':message'));
 });
+
+new testSuite('IRC.topic', 2, null, function()
+{
+	this.equal(IRC.topic('#channel', 'newTopic'), IRC.command('TOPIC', '#channel :newTopic'));
+	this.equal(IRC.topic('#channel'), IRC.command('TOPIC', '#channel'));
+});
