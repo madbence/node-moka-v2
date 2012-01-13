@@ -68,4 +68,11 @@ new testSuite('IRC.join', 4, null, function()
 	this.equal(IRC.join('#testChannel', 'password'), IRC.command('JOIN', '#testChannel password'));
 	this.equal(IRC.join(['#ch1','#ch2','#ch3']), IRC.command('JOIN', '#ch1,#ch2,#ch3'));
 	this.equal(IRC.join(['#ch1','#ch2','#ch3'], ['p1', 'p2']), IRC.command('JOIN', '#ch1,#ch2,#ch3 p1,p2'));
-	});
+});
+
+new testSuite('IRC.leave', 3, null, function()
+{
+	this.equal(IRC.leave('#channel'), IRC.command('PART', '#channel'));
+	this.equal(IRC.leave('#channel', 'message'), IRC.command('PART', '#channel :message'));
+	this.equal(IRC.leave(['#channel1', '&channel2']), IRC.command('PART', '#channel1,&channel2'));
+});

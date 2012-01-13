@@ -68,6 +68,14 @@ var IRC=
 			keys=keys.join(',');
 		}
 		return this.command('JOIN', channels+(keys?' '+keys:''));
+	},
+	'leave': function(channels, message)
+	{
+		if(channels instanceof Array)
+		{
+			channels=channels.join(',');
+		}
+		return this.command('PART', channels+(message?' :'+message:''));
 	}
 }
 
