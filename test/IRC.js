@@ -76,3 +76,9 @@ new testSuite('IRC.leave', 3, null, function()
 	this.equal(IRC.leave('#channel', 'message'), IRC.command('PART', '#channel :message'));
 	this.equal(IRC.leave(['#channel1', '&channel2']), IRC.command('PART', '#channel1,&channel2'));
 });
+
+new testSuite('IRC.quit', 2, null, function()
+{
+	this.equal(IRC.quit(), IRC.command('QUIT'));
+	this.equal(IRC.quit('message'), IRC.command('QUIT', ':message'));
+});

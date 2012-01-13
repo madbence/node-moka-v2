@@ -76,6 +76,10 @@ var IRC=
 			channels=channels.join(',');
 		}
 		return this.command('PART', channels+(message?' :'+message:''));
+	},
+	'quit': function(message)
+	{
+		return this.command('QUIT', message?':'+message:null);
 	}
 }
 
