@@ -58,18 +58,18 @@ new testSuite('Logger.setLogHandler', 2, null, function()
 
 new testSuite('Logger.isValidLogHandler', 12, env, function()
 {
-	this.equal(this.logger.isValidLogHandler('foo'), false);
-	this.equal(this.logger.isValidLogHandler(false), false);
-	this.equal(this.logger.isValidLogHandler([]), false);
-	this.equal(this.logger.isValidLogHandler({}), false);
-	this.equal(this.logger.isValidLogHandler(null), false);
-	this.equal(this.logger.isValidLogHandler(3), false);
-	this.equal(this.logger.isValidLogHandler({'log':true}), false);
-	this.equal(this.logger.isValidLogHandler({'log':4}), false);
-	this.equal(this.logger.isValidLogHandler({'log':[]}), false);
-	this.equal(this.logger.isValidLogHandler({'log':{}}), false);
-	this.equal(this.logger.isValidLogHandler({'log':function(){}}), false);
-	this.equal(this.logger.isValidLogHandler(
+	this.equal(Logger.prototype.isValidLogHandler.call(this, 'foo'), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, false), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, []), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, {}), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, null), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, 3), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, {'log':true}), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, {'log':4}), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, {'log':[]}), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, {'log':{}}), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, {'log':function(){}}), false);
+	this.equal(Logger.prototype.isValidLogHandler.call(this, 
 		{
 			'log':function(){},
 			'info':function(){},
