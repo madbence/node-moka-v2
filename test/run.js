@@ -1,10 +1,20 @@
 var fs=require('fs');
 
-fs.readdir('test/', function(err, files)
+var testRunner=function(clb)
 {
-	for(var i=0;i<files.length;i++)
+	fs.readdir('test/', function(err, files)
 	{
-		if(files[i].match(/\.js$/))
-			require('./'+files[i]);
-	}
-});
+		for(var i=0;i<files.length;i++)
+		{
+			if(files[i].match(/\.js$/))
+				require('./'+files[i]);
+		};
+		clb();
+	});
+}
+if(require.main === module)
+{
+	testRunner();
+}
+
+exports.testRunner=testRunner;
