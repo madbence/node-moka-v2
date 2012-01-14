@@ -51,7 +51,7 @@ new testSuite('Message.getNumericResponse', 3, env, function()
 {
 	this.throws(function()
 	{
-		this.message[0].getNumericResponse();
+		this.messages[0].getNumericResponse();
 	});
 	this.equal(this.messages[1].getNumericResponse(), 20);
 	this.equal(this.messages[2].getNumericResponse(), 1);
