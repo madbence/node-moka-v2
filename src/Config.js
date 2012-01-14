@@ -9,7 +9,7 @@ Config.prototype=
 	{
 		var path=str.split('.');
 		var current=this.config;
-		for(var i=0;i<path.length;i++);
+		for(var i=0;i<path.length;i++)
 		{
 			if(typeof current[path[i]] === 'undefined')
 			{
@@ -27,11 +27,25 @@ Config.prototype=
 		}
 		var path=str.split('.');
 		var current=this.config;
-		for(var i=0;i<path.length;i++);
+		for(var i=0;i<path.length;i++)
 		{
 			current=current[path[i]];
 		}
 		return current;
+	},
+	'setValue': function(str, value)
+	{
+		var path=str.split('.');
+		var current=this.config;
+		for(var i=0;i<path.length-1;i++)
+		{
+			if(typeof current[path[i]] === 'undefined')
+			{
+				current[path[i]]={};
+			}
+			current=current[path[i]];
+		}
+		current[path[i]]=value;
 	}
 }
 
