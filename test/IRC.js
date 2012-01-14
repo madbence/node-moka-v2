@@ -15,13 +15,13 @@ new testSuite('IRC.nick', 2, null, function()
 
 new testSuite('IRC.user', 2, null, function()
 {
-	this.equal(IRC.user('test'), 'USER test 0 * :...\n');
-	this.equal(IRC.user('test'), IRC.command('USER', 'test 0 * :...'));
+	this.equal(IRC.user('test'), 'USER test 8 * :...\n');
+	this.equal(IRC.user('test'), IRC.command('USER', 'test 8 * :...'));
 });
 
 new testSuite('IRC.connect', 2, null, function()
 {
-	this.equal(IRC.connect('test'), 'NICK test\nUSER test 0 * :...\n');
+	this.equal(IRC.connect('test'), 'NICK test\nUSER test 8 * :...\n');
 	this.equal(IRC.connect('test'), IRC.nick('test')+IRC.user('test'));
 });
 
