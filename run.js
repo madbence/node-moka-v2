@@ -81,7 +81,7 @@ bnc.dataHandler=function(data)
 		try
 		{
 			var message=new Message(messages[i]);
-			//conlog.log('Response: '+message.getResponse()+', trail: '+message.getTrail(), 'IRC');
+			conlog.log('Message created ('+message.getResponse()+')', 'Message.create');
 			if(moka)
 				moka.handle(message);
 		}
