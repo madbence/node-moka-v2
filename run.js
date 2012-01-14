@@ -14,6 +14,7 @@ var moka=null;
 var Message=require('./src/Message.js').Message;
 
 var config=require('./config.json');
+ConsoleLogger.setConfig(config.logger.consoleLogger);
 
 testSuite.prototype.stderr={'write':function(m){testFailed=true;console.log(':(')}};
 testSuite.prototype.stdout={'write':function(m){}};
