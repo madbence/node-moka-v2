@@ -9,11 +9,14 @@ var Logger=require('./src/Logger.js').Logger;
 var ConsoleLogger=require('./src/Logger/ConsoleLogger.js').handler;
 var conlog=new Logger(ConsoleLogger);
 var Moka=require('./src/Moka.js').Moka;
+var EventDispatcher=require('./src/EventDispatcher.js').EventDispatcher;
 var moka=null;
 
 var Message=require('./src/Message.js').Message;
 
 var config=require('./config.json');
+var Config=require('./src/Config.js').Config;
+var configObject=new Config(config);
 ConsoleLogger.setConfig(config.logger.consoleLogger);
 
 testSuite.prototype.stderr={'write':function(m){testFailed=true;console.log(':(')}};
@@ -39,8 +42,9 @@ var fileChecker=function()
 		}
 		conlog.info('Tests passed, restarting...', 'core');
 	});
-	moka=new Moka(config);
+	moka=new Moka(configObject);
 	moka.setLogger(conlog);
+	moka.setEventDispatcher(new EventDispatcher());
 }
 
 fs.watch('./src', function(){filesChanged=true;});
