@@ -17,6 +17,9 @@ var Message=require('./src/Message.js').Message;
 var config=require('./config.json');
 var Config=require('./src/Config.js').Config;
 var configObject=new Config(config);
+configObject.setValue('handlers.logger', conlog);
+configObject.setValue('handlers.event', new EventDispatcher());
+configObject.setValue('handlers.tcp', {'send':function(m){bnc.connection.write(m)}});
 ConsoleLogger.setConfig(config.logger.consoleLogger);
 
 testSuite.prototype.stderr={'write':function(m){testFailed=true;console.log(':(')}};
@@ -43,8 +46,6 @@ var fileChecker=function()
 		conlog.info('Tests passed, restarting...', 'core');
 	});
 	moka=new Moka(configObject);
-	moka.setLogger(conlog);
-	moka.setEventDispatcher(new EventDispatcher());
 }
 
 fs.watch('./src', function(){filesChanged=true;});
