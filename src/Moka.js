@@ -47,10 +47,11 @@ Moka.prototype=
 	'handleMessage': function(message)
 	{
 		this.logger.log('Incoming message: '+message.getTrail(), 'Moka.msg');
+		var privmsg=new PrivateMessage(message);
 	},
 	'handleCommand': function(message)
 	{
-		this.logger.info('Incoming command: '+message.getRaw(), 'Moka.cmd');
+		this.logger.log('Incoming command: '+message.getRaw(), 'Moka.cmd');
 	}
 }
 
