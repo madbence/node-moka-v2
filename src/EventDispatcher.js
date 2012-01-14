@@ -15,9 +15,13 @@ EventDispatcher.prototype=
 			this.logger.log('Event \''+label+'\' has '+this.listeners[label].length+' listeners.', 'EventDispatcher.emit');
 			for(var i=0;i<this.listeners[label].length;i++)
 			{
-				if(typeof this.listeners[label] === 'function')
+				if(typeof this.listeners[label][i] === 'function')
 				{
-					this.listeners[label](args);
+					this.listeners[label][i](args);
+				}
+				else
+				{
+					this.logger.warn('Listener for event \''+label+'\' is not a function!', 'EventDispatcher.emit');
 				}
 			}
 		}
