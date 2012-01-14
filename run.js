@@ -53,7 +53,7 @@ setInterval(fileChecker, 1000);
 
 bnc.onConnect=function()
 {
-	conlog.log('BNC connected', 'bnc');
+	conlog.log('TCP connection established with '+config.connection.server+' on port '+config.connection.port, 'bnc');
 	conlog.log('Starting identServer on port '+config.connection.identServer.port, 'bnc');
 	identServer.start(config.connection.identServer.name, config.connection.identServer.port, function(data)
 	{
@@ -66,7 +66,7 @@ bnc.onConnect=function()
 
 bnc.onDisconnect=function()
 {
-	conlog.log('BNC disconnected', 'bnc');
+	conlog.log('TCP connection closed', 'bnc');
 	fd.end();
 };
 var fd=fs.createWriteStream('./debug.txt', {'encoding':'utf8','flags':'a','mode':0666})
