@@ -8,6 +8,10 @@ var identServer=require('./bnc.js').identServer;
 var Logger=require('./src/Logger.js').Logger;
 var ConsoleLogger=require('./src/Logger/ConsoleLogger.js').handler;
 var conlog=new Logger(ConsoleLogger);
+var Moka=require('./src/Moka.js').Moka;
+var moka=null;
+
+var Message=require('./src/Message.js').Message;
 
 var config=require('./config.json');
 
@@ -34,7 +38,8 @@ var fileChecker=function()
 		}
 		conlog.info('Tests passed, restarting...', 'core');
 	});
-	
+	moka=new Moka(config);
+	moka.setLogger(conlog);
 }
 
 fs.watch('./src', function(){filesChanged=true;});
@@ -43,9 +48,10 @@ setInterval(fileChecker, 1000);
 bnc.onConnect=function()
 {
 	conlog.log('BNC connected', 'bnc');
-	identServer.start(config.nick, config.connection.identServer.port, function()
+	conlog.log('Starting identServer on port '+config.connection.identServer.port, 'bnc');
+	identServer.start(config.connection.identServer.name, config.connection.identServer.port, function(data)
 	{
-		conlog.log('IdentServer\'s got data!', 'bnc');
+		conlog.log('IdentServer\'s got data! ('+data+')', 'bnc');
 	}, function()
 	{
 		conlog.log('IdentServer closed!', 'bnc');
@@ -55,10 +61,34 @@ bnc.onConnect=function()
 bnc.onDisconnect=function()
 {
 	conlog.log('BNC disconnected', 'bnc');
+	fd.end();
 };
+var fd=fs.createWriteStream('./debug.txt', {'encoding':'utf8','flags':'a','mode':0666})
 
 bnc.dataHandler=function(data)
 {
-	conlog.log('Server sent: '+data.toString().replace('\r\n', ''));
+	data=data.toString();
+	fd.write(data);
+	var messages=data.split('\r\n');
+	for(var i=0;i<messages.length-1;i++)
+	{
+		try
+		{
+			var message=new Message(messages[i]);
+			//conlog.log('Response: '+message.getResponse()+', trail: '+message.getTrail(), 'IRC');
+			if(moka)
+				moka.handle(message);
+		}
+		catch(e)
+		{
+			conlog.warn(e.toString(), 'IRC');
+		}
+	}
 }
 bnc.connect(config.connection.server, config.connection.port);
+
+process.stdin.resume();
+process.stdin.on('data', function(data)
+{
+	bnc.connection.write(data);
+});
