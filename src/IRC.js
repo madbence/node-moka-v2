@@ -30,7 +30,10 @@ var IRC=
 	 */
 	'user': function(name, options)
 	{
-		return IRC.command('USER', name+' 0 * :...');
+		options=options||{};
+		var mode=options['mode']||8;
+		var realName=options['realName']||'...';
+		return IRC.command('USER', name+' '+mode+' * :'+realName);
 	},
 	/**
 	 * Produces a typical connection message
@@ -40,7 +43,7 @@ var IRC=
 	 */
 	'connect': function(name, options)
 	{
-		return this.nick(name)+this.user(name);
+		return this.nick(name)+this.user(name, options);
 	},
 	/**
 	 * Produces a MODE command, according to the parameters
