@@ -12,6 +12,8 @@ var testSuite=function(name, expect, environment, callback)
 
 testSuite.prototype=
 {
+	'stderr':{'write':function(m){process.stdout.write(m)}},
+	'stdout':{'write':function(m){process.stderr.write(m)}},
 	'ok': function(actual)
 	{
 		if(!actual)
@@ -48,7 +50,7 @@ testSuite.prototype=
 	},
 	'run': function()
 	{
-		process.stdout.write('Test ('+this.name+'): ');
+		this.stdout.write('Test ('+this.name+'): ');
 		if(this.environment && this.environment['setup'])
 		{
 			this.environment['setup'].call(this);
@@ -65,19 +67,20 @@ testSuite.prototype=
 		{
 			this.environment['tearDown'].call(this);
 		}
-		process.stdout.write('\n');
+		this.stdout.write('\n');
 		if(this.errorMessages.length)
 		{
 			for(var i=0;i<this.errorMessages.length;i++)
 			{
-				process.stdout.write(this.errorMessages[i]+'\n');
+				this.stdout.write(this.errorMessages[i]+'\n');
 			}
+			this.stderr.write('Test failed in '+__filename);
 		}
 		if(this.passed!=this.tests)
 		{
 			if(!this.failed)
 			{
-				process.stdout.write(this.tests+' test was expected to pass, '+this.passed+' passed.\n');
+				this.stdout.write(this.tests+' test was expected to pass, '+this.passed+' passed.\n');
 			}
 		}
 	},
@@ -85,16 +88,16 @@ testSuite.prototype=
 	{
 		this.failed++;
 		this.errorMessages.push(msg.replace(/\n/g, '\\n'));
-		process.stdout.write('F');
+		this.stdout.write('F');
 	},
 	'success': function()
 	{
 		this.passed++;
-		process.stdout.write('.');
+		this.stdout.write('.');
 	},
 	'error': function(e)
 	{
-		process.stdout.write('E');
+		this.stdout.write('E');
 		this.errorMessages.push(e.toString());
 	}
 };
