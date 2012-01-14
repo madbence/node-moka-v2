@@ -14,7 +14,7 @@ var testRunner=function(clb)
 }
 if(require.main === module)
 {
-	testRunner();
+	testRunner(function(){console.log('DONE');});
 }
 
 exports.testRunner=testRunner;
