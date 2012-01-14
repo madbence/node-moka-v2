@@ -57,4 +57,16 @@ new testSuite('Message.getNumericResponse', 3, env, function()
 	this.equal(this.messages[2].getNumericResponse(), 1);
 });
 
+new testSuite('Message.getTail', 3, env, function()
+{
+	this.equal(this.messages[0].getTail(), 'message');
+	this.equal(this.messages[3].getTail(), 'server');
+	this.equal(this.messages[5].getTail(), 'are supported by this server');
+});
+
+new testSuite('Message.getRaw', 1, env, function()
+{
+	this.equal(this.messages[0].getRaw(), ':server PRIVMSG user :message');
+});
+
 //new testSuite('Message.isServerMessage', 3, 
