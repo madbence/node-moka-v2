@@ -52,10 +52,11 @@ var identServer=
 		var server=identID=net.createServer(function (socket) {
 			socket.on('data', function(data)
 			{
-				socket.write(data.toString().replace('\r\n', '')+' : USERID : '+name+'\r\n');
+				data=data.toString().replace('\r\n', '');
+				socket.write(data+' : USERID : '+name+'\r\n');
 				if(dataclb && typeof dataclb === 'function')
 				{
-					dataclb();
+					dataclb(data);
 				}
 			});
 			socket.on('close', function()
