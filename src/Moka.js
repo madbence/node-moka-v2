@@ -23,9 +23,9 @@ var Moka=function(config)
 	if(config.getValue('listeners.onConnect.autojoin.join'))
 	{
 		var autojoin=config.getValue('listeners.onConnect.autojoin.channels');
-		that.logger.log('Autojoining: '+autojoin.join(','), 'Moka.autojoin');
 		this.on('welcome', function()
 		{
+			that.logger.log('Autojoining: '+autojoin.join(','), 'Moka.autojoin');
 			for(var i=0;i<autojoin.length;i++)
 			{
 				that.response(IRC.join(autojoin[i]));
