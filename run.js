@@ -1,31 +1,27 @@
 var testSuite=require('./test/testFramework/tester.js').testSuite;
-var build=require('./build/build.js').build;
+//var build=require('./build/build.js').build;
 var testRunner=require('./test/run.js').testRunner;
-var onTestComplete=require('./test/run.js').onComplete;
+//var onTestComplete=require('./test/run.js').onComplete;
 var fs=require('fs');
+var cp=require('child_process');
 var bnc=require('./bnc.js').bnc;
 var identServer=require('./bnc.js').identServer;
 var Logger=require('./src/Logger.js').Logger;
 var ConsoleLogger=require('./src/Logger/ConsoleLogger.js').handler;
 var conlog=new Logger(ConsoleLogger);
-var Moka=require('./src/Moka.js').Moka;
-var EventDispatcher=require('./src/EventDispatcher.js').EventDispatcher;
 var moka=null;
 
-var Message=require('./src/Message.js').Message;
+//var Message=require('./src/Message.js').Message;
 
-var config=require('./config.json');
+var configData=require('./config.json');
 var Config=require('./src/Config.js').Config;
-var configObject=new Config(config);
-configObject.setValue('handlers.logger', conlog);
-configObject.setValue('handlers.event', new EventDispatcher());
-configObject.setValue('handlers.tcp', {'send':function(m){bnc.connection.write(m)}});
-ConsoleLogger.setConfig(config.logger.consoleLogger);
+var config=new Config(configData);
 
 testSuite.prototype.stderr={'write':function(m){testFailed=true;console.log(':(')}};
 testSuite.prototype.stdout={'write':function(m){}};
 
 var filesChanged=true;
+var firstRun=true;
 
 var fileChecker=function()
 {
@@ -33,7 +29,15 @@ var fileChecker=function()
 	{
 		return;
 	}
-	conlog.info('Files changed, running tests.', 'core');
+	if(firstRun)
+	{
+		conlog.info('Node-Moka started, running tests...', 'core');
+		firstRun=false;
+	}
+	else
+	{
+		conlog.info('Files changed, running tests...', 'core');
+	}
 	filesChanged=false;
 	testFailed=false;
 	testRunner(function()
@@ -43,9 +47,22 @@ var fileChecker=function()
 			conlog.error('Test failed, restart cancelled', 'core');
 			return;
 		}
-		conlog.info('Tests passed, restarting...', 'core');
+		conlog.info('Tests passed, (re)starting...', 'core');
+		if(moka)
+		{
+			conlog.info('Killing bot instance...', 'core');
+			moka.kill();
+		}
+		conlog.info('Starting Moka instance...', 'core');
+		moka=cp.fork('./src/Bot.js');
+		moka.on('message', function(message)
+		{
+			if(message['message'])
+			{
+				bnc.connection.write(message['message']);
+			}
+		});
 	});
-	moka=new Moka(configObject);
 }
 
 fs.watch('./src', function(){filesChanged=true;});
@@ -53,9 +70,9 @@ setInterval(fileChecker, 1000);
 
 bnc.onConnect=function()
 {
-	conlog.log('TCP connection established with '+config.connection.server+' on port '+config.connection.port, 'bnc');
-	conlog.log('Starting identServer on port '+config.connection.identServer.port, 'bnc');
-	identServer.start(config.connection.identServer.name, config.connection.identServer.port, function(data)
+	conlog.log('TCP connection established with '+config.getValue('connection.server')+' on port '+config.getValue('connection.port'), 'bnc');
+	conlog.log('Starting identServer on port '+config.getValue('connection.identServer.port'), 'bnc');
+	identServer.start(config.getValue('connection.identServer.name'), config.getValue('connection.identServer.port'), function(data)
 	{
 		conlog.log('IdentServer\'s got data! ('+data+')', 'bnc');
 	}, function()
@@ -78,20 +95,13 @@ bnc.dataHandler=function(data)
 	var messages=data.split('\r\n');
 	for(var i=0;i<messages.length-1;i++)
 	{
-		try
+		if(moka)
 		{
-			var message=new Message(messages[i]);
-			conlog.log('Message created ('+message.getResponse()+')', 'Message.create');
-			if(moka)
-				moka.handle(message);
-		}
-		catch(e)
-		{
-			conlog.warn(e.toString(), 'IRC');
+			moka.send({'message':messages[i]});
 		}
 	}
 }
-bnc.connect(config.connection.server, config.connection.port);
+bnc.connect(config.getValue('connection.server'), config.getValue('connection.port'));
 
 process.stdin.resume();
 process.stdin.on('data', function(data)
