@@ -18,6 +18,10 @@ PrivateMessage.prototype=
 	'getTarget': function()
 	{
 		return this.target;
+	},
+	'getRawMessage': function()
+	{
+		return this.rawMessage;
 	}
 }
 
