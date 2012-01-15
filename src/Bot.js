@@ -7,6 +7,26 @@
  */
 
 /**
+ * Sending the given message back to the parent
+ *
+ * If message is provided, it sends back a {'message':message}
+ * object, otherwise the 'other' object
+ * @param {string} message IRC message
+ * @param {object} other Other command to the parent
+ */
+var sendBack=function(message, other)
+{
+	if(message)
+	{
+		process.send({'message':message});
+	}
+	else
+	{
+		process.send(other);
+	}
+}
+
+/**
  * Reads the application config
  */
 var configData=require('../config.json');
@@ -23,6 +43,8 @@ var Config=require('./Config.js').Config;
  * Creating the application config object
  */
 var config=new Config(configData);
+//Moka sends its responses to this function
+config.setValue('connection.handler', sendBack);
 
 /**
  * Moka is the soul of the bot
@@ -55,29 +77,14 @@ process.on('message', function(message)
 });
 
 /**
- * Sending the given message back to the parent
- *
- * If message is provided, it sends back a {'message':message}
- * object, otherwise the 'other' object
- * @param {string} message IRC message
- * @param {object} other Other command to the parent
- */
-var sendBack=function(message, other)
-{
-	if(message)
-	{
-		process.send('message':message);
-	}
-	else
-	{
-		process.send(other);
-	}
-}
-
-/**
  * On SIGTERM, we commit suicide
  */
-process.on('SIGTERM', function()
+/*process.on('SIGTERM', function()
 {
 	process.exit(0);
+});*/
+
+process.on('uncaughtException', function(e)
+{
+	app.logger.error('UNCAUGHT EXCEPTION: '+e);
 });
