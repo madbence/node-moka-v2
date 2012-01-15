@@ -6,6 +6,7 @@ var fs=require('fs');
 var cp=require('child_process');
 var bnc=require('./bnc.js').bnc;
 var identServer=require('./bnc.js').identServer;
+var CommandLineParser=require('./src/CommandLineParser.js').CommandLineParser;
 var Logger=require('./src/Logger.js').Logger;
 var ConsoleLogger=require('./src/Logger/ConsoleLogger.js').handler;
 var conlog=new Logger(ConsoleLogger);
@@ -103,8 +104,15 @@ bnc.dataHandler=function(data)
 }
 bnc.connect(config.getValue('connection.server'), config.getValue('connection.port'));
 
+var cliParser=new CommandLineParser(
+{
+	'logger': conlog,
+	'moka': moka,
+	'connection': bnc.connection
+});
 process.stdin.resume();
 process.stdin.on('data', function(data)
 {
-	bnc.connection.write(data);
+	var command=cliParser.parse(data.toString().replace('\r\n', ''));
+	command.process();
 });
