@@ -1,5 +1,6 @@
 var PrivateMessage=require('./PrivateMessage.js').PrivateMessage;
 var IRC=require('./IRC.js').IRC;
+var Logger=require('./Logger.js').Logger;
 
 /**
  * Creates a Moka according to the config file
@@ -8,17 +9,33 @@ var Moka=function(config)
 {
 	var that=this;
 	this.config=config;
-	if(config.hasValue('handlers.logger'))
+	if(config.hasValue('logger.use'))
 	{
-		this.setLogger(config.getValue('handlers.logger'));
+		var loggerName=config.getValue('logger.use');
+		var logHandler=require('./Logger/'+loggerName+'.js').handler;
+		this.setLogger(new Logger(logHandler));
 	}
-	if(config.hasValue('handlers.event'))
+	else
 	{
-		this.setEventDispatcher(config.getValue('handlers.event'));
+		throw new Error('Logger not specified (logger.use)!');
 	}
-	if(config.hasValue('handlers.tcp'))
+	if(config.hasValue('eventHandler.user'))
 	{
-		this.setResponseHandler(config.getValue('handlers.tcp'));
+		var eventHandlerName=config.getValue('eventHandler.use');
+		var Handler=require('./'+eventHandlerName+'.js')[eventHandlerName];
+		this.setEventHandler(new Handler(this.logger))
+	}
+	else
+	{
+		throw new Error('EventHandler not specified (eventHandler.use)!');
+	}
+	if(config.hasValue('connection.handler'))
+	{
+		this.setResponseHandler(config.getValue('connection.handler'));
+	}
+	else
+	{
+		throw new Error('ResponseHandler not specified (connection.handler)!');
 	}
 	if(config.getValue('listeners.onConnect.autojoin.join'))
 	{
@@ -37,11 +54,56 @@ var Moka=function(config)
 
 Moka.prototype=
 {
+	'init': function()
+	{
+		this.initLogger();
+		this.initEventHandler();
+		this.initResponseHandler();
+	},
+	'initLogger': function()
+	{
+		var config=this.config;
+		if(config.hasValue('logger.use'))
+		{
+			var loggerName=config.getValue('logger.use');
+			var logHandler=require('./Logger/'+loggerName+'.js').handler;
+			this.setLogger(new Logger(logHandler));
+		}
+		else
+		{
+			throw new Error('Logger not specified (logger.use)!');
+		}
+	},
+	'initEventHandler': function()
+	{
+		var config=this.config;
+		if(config.hasValue('eventHandler.user'))
+		{
+			var eventHandlerName=config.getValue('eventHandler.use');
+			var Handler=require('./'+eventHandlerName+'.js')[eventHandlerName];
+			this.setEventHandler(new Handler(this.logger))
+		}
+		else
+		{
+			throw new Error('EventHandler not specified (eventHandler.use)!');
+		}
+	},
+	'initResponseHandler': function()
+	{
+		var config=this.config;
+		if(config.hasValue('connection.handler'))
+		{
+			this.setResponseHandler(config.getValue('connection.handler'));
+		}
+		else
+		{
+			throw new Error('ResponseHandler not specified (connection.handler)!');
+		}
+	},
 	'eventDispatcher':null,
 	'setEventDispatcher': function(handler)
 	{
 		this.eventDispatcher=handler;
-		this.eventDispatcher.logger=this.logger;
 	},
 	'emit': function(label)
 	{
@@ -96,6 +158,10 @@ Moka.prototype=
 	'handleCommand': function(message)
 	{
 		this.logger.log('Incoming command: '+message.getRaw(), 'Moka.cmd');
+		switch(message.getResponse())
+		{
+			case 'MODE':
+				this.logger.log('Got MODE message ('
 	},
 	'response': function(message, label)
 	{
