@@ -1,4 +1,5 @@
 var PrivateMessage=require('./PrivateMessage.js').PrivateMessage;
+var Message=require('./Message.js').Message;
 var IRC=require('./IRC.js').IRC;
 var Logger=require('./Logger.js').Logger;
 
@@ -9,34 +10,7 @@ var Moka=function(config)
 {
 	var that=this;
 	this.config=config;
-	if(config.hasValue('logger.use'))
-	{
-		var loggerName=config.getValue('logger.use');
-		var logHandler=require('./Logger/'+loggerName+'.js').handler;
-		this.setLogger(new Logger(logHandler));
-	}
-	else
-	{
-		throw new Error('Logger not specified (logger.use)!');
-	}
-	if(config.hasValue('eventHandler.user'))
-	{
-		var eventHandlerName=config.getValue('eventHandler.use');
-		var Handler=require('./'+eventHandlerName+'.js')[eventHandlerName];
-		this.setEventHandler(new Handler(this.logger))
-	}
-	else
-	{
-		throw new Error('EventHandler not specified (eventHandler.use)!');
-	}
-	if(config.hasValue('connection.handler'))
-	{
-		this.setResponseHandler(config.getValue('connection.handler'));
-	}
-	else
-	{
-		throw new Error('ResponseHandler not specified (connection.handler)!');
-	}
+	this.init();
 	if(config.getValue('listeners.onConnect.autojoin.join'))
 	{
 		var autojoin=config.getValue('listeners.onConnect.autojoin.channels');
@@ -77,7 +51,7 @@ Moka.prototype=
 	'initEventHandler': function()
 	{
 		var config=this.config;
-		if(config.hasValue('eventHandler.user'))
+		if(config.hasValue('eventHandler.use'))
 		{
 			var eventHandlerName=config.getValue('eventHandler.use');
 			var Handler=require('./'+eventHandlerName+'.js')[eventHandlerName];
@@ -101,17 +75,17 @@ Moka.prototype=
 		}
 	},
 	'eventDispatcher':null,
-	'setEventDispatcher': function(handler)
+	'setEventHandler': function(handler)
 	{
-		this.eventDispatcher=handler;
+		this.eventHandler=handler;
 	},
 	'emit': function(label)
 	{
-		this.eventDispatcher.emit(label, Array.prototype.slice.call(arguments, 1));
+		this.eventHandler.emit(label, Array.prototype.slice.call(arguments, 1));
 	},
 	'on': function(label, callback)
 	{
-		this.eventDispatcher.on(label, callback);
+		this.eventHandler.on(label, callback);
 	},
 	'setLogger': function(logger)
 	{
@@ -119,16 +93,24 @@ Moka.prototype=
 	},
 	'handle': function(message)
 	{
-		if(message.isNumericResponse())
+		try
 		{
-			return this.handleNumericResponse(message);
+			message=new Message(message);
+			if(message.isNumericResponse())
+			{
+				return this.handleNumericResponse(message);
+			}
+			switch(message.getResponse())
+			{
+				case 'PRIVMSG':
+					return this.handleMessage(message);
+				default:
+					return this.handleCommand(message);
+			}
 		}
-		switch(message.getResponse())
+		catch(exception)
 		{
-			case 'PRIVMSG':
-				return this.handleMessage(message);
-			default:
-				return this.handleCommand(message);
+			this.logger.warn(exception.toString(), 'Moka.handle');
 		}
 	},
 	'handleNumericResponse': function(message)
@@ -152,20 +134,20 @@ Moka.prototype=
 	},
 	'handleMessage': function(message)
 	{
-		this.logger.log('Incoming message: '+message.getTail(), 'Moka.msg');
 		var privmsg=new PrivateMessage(message);
+		this.logger.log('Message from '+privmsg.getSender()+' to '+privmsg.getTarget()+': '+privmsg.getRawMessage(), 'Moka.msg');
 	},
 	'handleCommand': function(message)
 	{
 		this.logger.log('Incoming command: '+message.getRaw(), 'Moka.cmd');
-		switch(message.getResponse())
+		/*switch(message.getResponse())
 		{
 			case 'MODE':
-				this.logger.log('Got MODE message ('
+				this.logger.log('Got MODE message ('*/
 	},
 	'response': function(message, label)
 	{
-		this.responseHandler.send(message, label);
+		this.responseHandler(message, label);
 	},
 	'setResponseHandler': function(handler)
 	{
