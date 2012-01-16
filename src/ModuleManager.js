@@ -4,13 +4,41 @@ var ModuleManager=function(config, eventHandler, logger)
 {
 	this.logger=logger;
 	this.eventHandler=eventHandler;
-	this.config=config;
+	this.init(config);
 	this.loadModules();
 }
 
 ModuleManager.prototype=
 {
 	'modules':[],
+	'init': function(config)
+	{
+		this.config=config;
+		this.enableAll=config.enableAll;
+		this.whiteList=config.whiteList;
+		this.blackList=config.blackList;
+		this.logConfig()
+	},
+	'logConfig': function()
+	{
+		this.logger.log('Plugins are '+(this.enableAll?'ENABLED':'DISABLED')+' by default', 'ModuleManager.debug');
+		if(this.blackList.length)
+		{
+			this.logger.log('Plugin blacklist has '+this.blackList.length+' items.', 'ModuleManager.debug');
+		}
+		else
+		{
+			this.logger.log('Plugin blacklist is empty.', 'ModuleManager.debug');
+		}
+		if(this.whiteList.length)
+		{
+			this.logger.log('Plugin whitelist has '+this.whiteList.length+' items.', 'ModuleManager.debug');
+		}
+		else
+		{
+			this.logger.log('Plugin whitelist is empty.', 'ModuleManager.debug');
+		}
+	},
 	/**
 	 * Trying to load the modules (async!)
 	 */
@@ -33,52 +61,37 @@ ModuleManager.prototype=
 			return;
 		}
 		this.logger.log(files.length+' files found in '+this.config.dir, 'ModuleManager.loadModules');
-		var enableAll=this.config.enableAll;
-		var whiteList=this.config.whiteList;
-		var blackList=this.config.blackList;
-		this.logger.log('Plugins are '+(enableAll?'ENABLED':'DISABLED')+' by default', 'ModuleManager.loadModules');
-		if(blackList.length)
-		{
-			this.logger.log('Plugin blacklist has '+blackList.length+' items.', 'ModuleManager.loadModules');
-		}
-		else
-		{
-			this.logger.log('Plugin blacklist is empty.', 'ModuleManager.loadModules');
-		}
-		if(whiteList.length)
-		{
-			this.logger.log('Plugin whitelist has '+whiteList.length+' items.', 'ModuleManager.loadModules');
-		}
-		else
-		{
-			this.logger.log('Plugin whitelist is empty.', 'ModuleManager.loadModules');
-		}
 		for(var i=0;i<files.length;i++)
 		{
 			var load=enableAll;
 			var plugin=files[i];
 			var pluginName=plugin.substr(0, plugin.length-3);
-			for(var j=0;j<blackList.length;j++)
-			{
-				if(blackList[j] == pluginName)
-				{
-					load=false;
-					this.logger.log('Plugin \''+pluginName+'\' blacklisted.', 'ModuleManager.blackListSearch');
-				}
-			}
-			for(var j=0;j<whiteList.length;j++)
-			{
-				if(whiteList[j] == pluginName)
-				{
-					load=true;
-					this.logger.log('Plugin \''+pluginName+'\' whitelisted.', 'ModuleManager.whiteListSearch');
-				}
-			}
+			
 			this.logger.log('Plugin \''+pluginName+'\' will '+(load?'':'NOT ')+'load.', 'ModuleManager.blackListSearch');
 			if(load)
 			{
 				var module=require('./'+this.config.dir+'/'+plugin).module;
 				this.modules.push(module);
+			}
+		}
+	},
+	'isLoadEnabledForModule': function(name)
+	{
+		var canLoad=this.enableAll;
+		for(var j=0;j<this.blackList.length;j++)
+		{
+			if(this.blackList[j] == pluginName)
+			{
+				canLoad=false;
+				this.logger.log('Plugin \''+pluginName+'\' blacklisted.', 'ModuleManager.permission');
+			}
+		}
+		for(var j=0;j<this.whiteList.length;j++)
+		{
+			if(whiteList[j] == pluginName)
+			{
+				canLoad=true;
+				this.logger.log('Plugin \''+pluginName+'\' whitelisted.', 'ModuleManager.permission');
 			}
 		}
 	}
