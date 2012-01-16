@@ -42,7 +42,7 @@ Moka.prototype=
 		{
 			var loggerName=config.getValue('logger.use');
 			var logHandler=require('./Logger/'+loggerName+'.js').handler;
-			this.setLogger(new Logger(logHandler));
+			this.setLogger(new Logger(logHandler, config.getValue('logger.'+loggerName)));
 		}
 		else
 		{
