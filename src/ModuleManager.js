@@ -77,7 +77,8 @@ ModuleManager.prototype=
 			this.logger.log('Plugin \''+pluginName+'\' will '+(load?'':'NOT ')+'load.', 'ModuleManager.blackListSearch');
 			if(load)
 			{
-				this.modules.push(require('./'+this.config.dir+'/'+plugin).module);
+				var module=require('./'+this.config.dir+'/'+plugin).module;
+				this.modules.push(module);
 			}
 		}
 	}
