@@ -88,3 +88,9 @@ new testSuite('IRC.topic', 2, null, function()
 	this.equal(IRC.topic('#channel', 'newTopic'), IRC.command('TOPIC', '#channel :newTopic'));
 	this.equal(IRC.topic('#channel'), IRC.command('TOPIC', '#channel'));
 });
+
+new testSuite('IRC.privmsg', 2, null, function()
+{
+	this.equal(IRC.privmsg('#channel', 'message'), IRC.command('PRIVMSG', '#channel :message'));
+	this.equal(IRC.privmsg('user', 'message'), IRC.command('PRIVMSG', 'user :message'));
+});
