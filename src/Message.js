@@ -1,9 +1,9 @@
 var Message=function(string)
 {
-	var match=string.match(/^(:([^ ]+) |)([0-9]{3}|[A-Z]+) ([^:]*):(.*?)$/);
+	var match=string.match(/^(:([^ ]+) |)([0-9]{3}|[A-Z]+) ([^:]*)(:(.*?))?$/);
 	if(!match)
 	{
-		throw new Error('\''+string.substr(0, 10)+'...\' is a malformed message (its beginnig/end is maybe in the prevorius/next buffer?)');
+		throw new Error('\''+string+'...\' is a malformed message (its beginnig/end is maybe in the prevorius/next buffer?)');
 	}
 	this.origin=match[2];
 	this.response=match[3];
