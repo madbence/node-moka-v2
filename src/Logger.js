@@ -1,8 +1,12 @@
-var Logger=function(handler)
+var Logger=function(handler, config)
 {
 	if(handler)
 	{
 		this.setLogHandler(handler);
+		if(config)
+		{
+			this.logHandler.setConfig(config);
+		}
 	}
 };
 
@@ -13,7 +17,7 @@ Logger.prototype=
 	{
 		if(this.isValidLogHandler(handler))
 		{
-			this.logHandler=handler
+			this.logHandler=handler;
 		}
 		else
 		{
