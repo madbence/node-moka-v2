@@ -159,6 +159,15 @@ var IRC=
 	'topic': function(channel, newTopic)
 	{
 		return this.command('TOPIC', channel+(newTopic?' :'+newTopic:''));
+	},
+	/**
+	 * Produces a PRIVMSG message
+	 * @param {string} channel Channel or user
+	 * @param {string} message Message
+	 */
+	'privmsg': function(channel, message)
+	{
+		return this.command('PRIVMSG', channel+' :'+message);
 	}
 }
 
