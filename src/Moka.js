@@ -33,6 +33,7 @@ Moka.prototype=
 		this.initLogger();
 		this.initEventHandler();
 		this.initResponseHandler();
+		this.initModules();
 	},
 	'initLogger': function()
 	{
@@ -72,6 +73,18 @@ Moka.prototype=
 		else
 		{
 			throw new Error('ResponseHandler not specified (connection.handler)!');
+		}
+	},
+	'initModules': function()
+	{
+		var config=this.config;
+		if(config.hasValue('moduleManager.use'))
+		{
+			this.modules=new (require('./'+config.getValue('moduleManager.use')+'.js').manager)(config.getValue('moduleManager.'+config.getValue('moduleManager.use')), this.eventHandler, this.logger);
+		}
+		else
+		{
+			throw new Error('ModuleManager not specified (moduleManager.use)!');
 		}
 	},
 	'eventDispatcher':null,
@@ -128,7 +141,8 @@ Moka.prototype=
 				this.logger.log('End of MOTD.', 'Moka.low');
 				break;
 			default:
-				//Do something?
+				this.logger.log(message.getResponse()+': '+message.getTail(), 'Moka.low');
+				this.emit('RPL_'+message.getResponse());
 				break;
 		}
 	},
@@ -140,10 +154,12 @@ Moka.prototype=
 	'handleCommand': function(message)
 	{
 		this.logger.log('Incoming command: '+message.getRaw(), 'Moka.cmd');
-		/*switch(message.getResponse())
+		switch(message.getResponse())
 		{
-			case 'MODE':
-				this.logger.log('Got MODE message ('*/
+			case 'PING':
+				this.logger.log('PONG to '+message.getTail(), 'pong');
+				this.response('PONG :'+message.getTail());
+		}
 	},
 	'response': function(message, label)
 	{
