@@ -56,7 +56,7 @@ Moka.prototype=
 		{
 			var eventHandlerName=config.getValue('eventHandler.use');
 			var Handler=require('./'+eventHandlerName+'.js')[eventHandlerName];
-			this.setEventHandler(new Handler(this.logger))
+			this.setEventHandler(new Handler(this, this.logger))
 		}
 		else
 		{
@@ -149,6 +149,7 @@ Moka.prototype=
 	'handleMessage': function(message)
 	{
 		var privmsg=new PrivateMessage(message);
+		this.eventHandler.emit('message', privmsg);
 		this.logger.log('Message from '+privmsg.getSender()+' to '+privmsg.getTarget()+': '+privmsg.getRawMessage(), 'Moka.msg');
 	},
 	'handleCommand': function(message)
