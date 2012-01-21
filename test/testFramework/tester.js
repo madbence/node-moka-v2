@@ -74,7 +74,7 @@ testSuite.prototype=
 			{
 				this.stdout.write(this.errorMessages[i]+'\n');
 			}
-			this.stderr.write('Test failed in '+__filename);
+			this.stderr.write('Test failed in '+this.name);
 		}
 		if(this.passed!=this.tests)
 		{
