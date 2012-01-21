@@ -1,4 +1,5 @@
 var fs=require('fs');
+var _=require('../lib/array.js');
 
 var ModuleManager=function(config, eventHandler, logger)
 {
@@ -61,17 +62,35 @@ ModuleManager.prototype=
 			return;
 		}
 		this.logger.log(files.length+' files found in '+this.config.dir, 'ModuleManager.loadModules');
+		this.loadModulesFromArray(files);
+	},
+	'loadModulesFromArray': function(files)
+	{
 		for(var i=0;i<files.length;i++)
 		{
-			var load=enableAll;
 			var plugin=files[i];
 			var pluginName=plugin.substr(0, plugin.length-3);
-			
-			this.logger.log('Plugin \''+pluginName+'\' will '+(load?'':'NOT ')+'load.', 'ModuleManager.blackListSearch');
-			if(load)
+			if(this.isLoadEnabledForModule(pluginName))
 			{
+				this.logger.log('Plugin \''+pluginName+'\' will load.', 'ModuleManager.load');
 				var module=require('./'+this.config.dir+'/'+plugin).module;
 				this.modules.push(module);
+				if(module.listeners)
+				{
+					var that=this;
+					_.forEach(module.listeners,function(listeners, index)
+					{
+						that.logger.log('Plugin \''+pluginName+'\' has '+listeners.length+' listeners for the event \''+index+'\'', 'ModuleManager.registerEventListeners');
+						_.forEach(listeners,function(listener)
+						{
+							that.eventHandler.on(index, listener);
+						});
+					});
+				}
+			}
+			else
+			{
+				this.logger.log('Plugin \''+pluginName+'\' will NOT load.', 'ModuleManager.load');
 			}
 		}
 	},
@@ -80,20 +99,21 @@ ModuleManager.prototype=
 		var canLoad=this.enableAll;
 		for(var j=0;j<this.blackList.length;j++)
 		{
-			if(this.blackList[j] == pluginName)
+			if(this.blackList[j] == name)
 			{
 				canLoad=false;
-				this.logger.log('Plugin \''+pluginName+'\' blacklisted.', 'ModuleManager.permission');
+				this.logger.log('Plugin \''+name+'\' blacklisted.', 'ModuleManager.permission');
 			}
 		}
 		for(var j=0;j<this.whiteList.length;j++)
 		{
-			if(whiteList[j] == pluginName)
+			if(this.whiteList[j] == name)
 			{
 				canLoad=true;
-				this.logger.log('Plugin \''+pluginName+'\' whitelisted.', 'ModuleManager.permission');
+				this.logger.log('Plugin \''+name+'\' whitelisted.', 'ModuleManager.permission');
 			}
 		}
+		return canLoad;
 	}
 }
 
