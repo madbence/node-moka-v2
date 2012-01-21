@@ -1,13 +1,13 @@
 var Message=function(string)
 {
-	var match=string.match(/^(:([^ ]+) |)([0-9]{3}|[A-Z]+) ([^:]*)(:(.*?))?$/);
+	var match=string.match(/^(:([^ ]+) |)([0-9]{3}|[A-Z]+) ([^:]*)(|(:(.*?)))?$/);
 	if(!match)
 	{
 		throw new Error('\''+string+'...\' is a malformed message (its beginnig/end is maybe in the prevorius/next buffer?)');
 	}
 	this.origin=match[2];
 	this.response=match[3];
-	this.trail=match[5];
+	this.trail=match[7];
 	var parameters=match[4].split(' ');
 	this.parameters=parameters.slice(0, parameters.length-1);
 	this.raw=string;
