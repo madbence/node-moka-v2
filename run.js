@@ -18,7 +18,7 @@ var configData=require('./config.json');
 var Config=require('./src/Config.js').Config;
 var config=new Config(configData);
 
-testSuite.prototype.stderr={'write':function(m){testFailed=true;console.log(':(')}};
+testSuite.prototype.stderr={'write':function(m){testFailed=true;console.log(m)}};
 testSuite.prototype.stdout={'write':function(m){}};
 
 var filesChanged=true;
