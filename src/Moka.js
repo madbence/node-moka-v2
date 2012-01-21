@@ -158,8 +158,8 @@ Moka.prototype=
 		switch(message.getResponse())
 		{
 			case 'PING':
-				this.logger.log('PONG to '+message.getTail(), 'pong');
-				this.response('PONG :'+message.getTail());
+				this.logger.log('PING from '+message.getTail(), 'Moka.cmd.ping');
+				this.eventHandler.emit('Moka.cmd.ping', message.getTail());
 		}
 	},
 	'response': function(message, label)
