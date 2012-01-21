@@ -1,12 +1,14 @@
-var EventDispatcher=function(logger)
+var EventDispatcher=function(moka,logger)
 {
 	logger=logger||console;
 	this.logger=logger;
+	this.mokaInstanc=moka;
 }
 
 EventDispatcher.prototype=
 {
 	'listeners':{},
+	'mokaInstance':null,
 	'emit': function(label, args)
 	{
 		this.logger.log('Event \''+label+'\' emitted.', 'EventDispatcher.emit');
@@ -17,7 +19,7 @@ EventDispatcher.prototype=
 			{
 				if(typeof this.listeners[label][i] === 'function')
 				{
-					this.listeners[label][i](args);
+					this.listeners[label][i]([this.mokaInstance].concat(args));
 				}
 				else
 				{
