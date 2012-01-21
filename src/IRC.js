@@ -168,7 +168,16 @@ var IRC=
 	'privmsg': function(channel, message)
 	{
 		return this.command('PRIVMSG', channel+' :'+message);
-	}
+	},
+	/**
+	 * Produces a PONG message
+	 * @param {string} target Address of the targer
+	 * @return {string} PONG message
+	 */
+	'pong': function(target)
+	{
+		return this.command('PONG', ':'+target);
+	},
 }
 
 exports.IRC=IRC;
