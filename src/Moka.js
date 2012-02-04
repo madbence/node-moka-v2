@@ -138,7 +138,8 @@ Moka.prototype=
 	{
 		var privmsg=new PrivateMessage(message);
 		this.eventHandler.emit('message', privmsg);
-		this.logger.log('Message from '+privmsg.getSender()+' to '+privmsg.getTarget()+': '+privmsg.getRawMessage(), 'Moka.msg');
+		this.logger.log('Message from '+privmsg.getNick()+' to '+privmsg.getTarget()+': '+privmsg.getRawMessage(), 'Moka.msg');
+		privmsg.process(this);
 	},
 	'handleCommand': function(message)
 	{
@@ -151,6 +152,12 @@ Moka.prototype=
 		}
 	},
 	'response': function(message, label)
+	{
+		this.logger.warn('moka.response is old, use moka.respond instead');
+		this.emit('response', message, label);
+		this.responseHandler(message, label);
+	},
+	'respond': function(message, label)
 	{
 		this.emit('response', message, label);
 		this.responseHandler(message, label);
@@ -171,6 +178,27 @@ Moka.prototype=
 	'getRealName': function()
 	{
 		return this.config.getValue('realName')||'node-moka';
+	},
+	'commands': [],
+	'runCommand': function(message, name, params)
+	{
+		for(var i=0;i<this.modules.commands.length;i++)
+		{
+			if(this.modules.commands[i].name == name)
+			{
+				this.modules.commands[i].callback.call(this, message, this.commands[i], params);
+			}
+		}
+		this.logger.warn('Command not found. (\''+name+'\' from '+message.getNick()+')', 'Moka.command');
+	},
+	'reply': function(message, reply)
+	{
+		var namePrefix='';
+		if(message.isPrivate())
+		{
+			namePrefix=message.getNick()+': ';
+		}
+		this.respond(IRC.privmsg(message.getTarget(), namePrefix+reply));
 	}
 }
 

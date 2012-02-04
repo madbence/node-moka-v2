@@ -15,6 +15,10 @@ PrivateMessage.prototype=
 	{
 		return this.sender;
 	},
+	'getNick': function()
+	{
+		return this.sender.substr(0, this.sender.indexOf('!'));
+	},
 	'getTarget': function()
 	{
 		return this.target;
@@ -23,12 +27,16 @@ PrivateMessage.prototype=
 	{
 		return this.rawMessage;
 	},
+	'isPrivate': function()
+	{
+		return this.getTarget().indexOf('#') !== 0;
+	},
 	'process': function(moka)
 	{
 		var prefix=moka.config.getValue('commands.prefix');
 		if(prefix && this.rawMessage.indexOf(prefix) === 0)
 		{
-			moka.runCommand(this.rawMessage.substr(prefix.length), this.rawMessage.split(' ').slice(1));
+			moka.runCommand(this, this.rawMessage.substr(prefix.length), this.rawMessage.split(' ').slice(1));
 		}
 	}
 }

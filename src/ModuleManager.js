@@ -12,6 +12,7 @@ var ModuleManager=function(config, eventHandler, logger)
 ModuleManager.prototype=
 {
 	'modules':[],
+	'commands':[],
 	'init': function(config)
 	{
 		this.config=config;
@@ -85,6 +86,15 @@ ModuleManager.prototype=
 						{
 							that.eventHandler.on(index, listener);
 						});
+					});
+				}
+				if(module.commands)
+				{
+					var that=this;
+					_.forEach(module.commands,function(command, index)
+					{
+						that.logger.log('Plugin \''+pluginName+'\' added command \''+command.name+'\'', 'ModuleManager.registerCommands');
+						that.commands.push(command);
 					});
 				}
 			}
