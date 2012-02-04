@@ -31,7 +31,7 @@ exports.module=
 				return true;
 			}
 		},
-		{
+		/*{
 			name: 'me',
 			man:
 			[
@@ -44,6 +44,6 @@ exports.module=
 					exports.commands[0].func.call(this, params);
 				}
 			}
-		}
+		}*/
 	],
 }

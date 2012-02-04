@@ -36,7 +36,7 @@ PrivateMessage.prototype=
 		var prefix=moka.config.getValue('commands.prefix');
 		if(prefix && this.rawMessage.indexOf(prefix) === 0)
 		{
-			moka.runCommand(this, this.rawMessage.substr(prefix.length), this.rawMessage.split(' ').slice(1));
+			moka.runCommand(this, this.rawMessage.split(' ')[0].substr(prefix.length), this.rawMessage.split(' ').slice(1));
 		}
 	}
 }
