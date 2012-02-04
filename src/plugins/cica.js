@@ -3,13 +3,13 @@ exports.module=
 	'commands':
 	[
 		{
-			name: 'cica',
-			man:
+			'name': 'cica',
+			'man':
 			[
 				'"%c", megmondja mennyi ido mulva valtozik at _VauViktor',
 				'_VauViktor hasznalhatja l.me formaban is!',
 			],
-			callback: function(message, command, params)
+			'callback': function(message, command, params)
 			{
 				var target=new Date();
 				target.setHours(1);

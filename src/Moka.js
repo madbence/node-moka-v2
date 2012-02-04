@@ -22,6 +22,7 @@ Moka.prototype=
 		this.initEventHandler();
 		this.initResponseHandler();
 		this.initModules();
+		this.initPermissionManager();
 	},
 	'initLogger': function()
 	{
@@ -68,11 +69,25 @@ Moka.prototype=
 		var config=this.config;
 		if(config.hasValue('moduleManager.use'))
 		{
-			this.modules=new (require('./'+config.getValue('moduleManager.use')+'.js').manager)(config.getValue('moduleManager.'+config.getValue('moduleManager.use')), this.eventHandler, this.logger);
+			this.modules=new (require('./'+config.getValue('moduleManager.use')+'.js').manager)
+				(config.getValue('moduleManager.'+config.getValue('moduleManager.use')), this.eventHandler, this.logger);
 		}
 		else
 		{
 			throw new Error('ModuleManager not specified (moduleManager.use)!');
+		}
+	},
+	'initPermissionManager': function()
+	{
+		var config=this.config;
+		if(config.hasValue('permissionManager.use'))
+		{
+			this.permissionManager=new (require('./'+config.getValue('permissionManager.use')+'.js').manager)
+				(config.getValue('permissionManager.'+config.getValue('permissionManager.use')), this)
+		}
+		else
+		{
+			throw new Error('PermissionManager not specified (permissionManager.use)!');
 		}
 	},
 	'eventDispatcher':null,
@@ -111,6 +126,7 @@ Moka.prototype=
 		}
 		catch(exception)
 		{
+			console.log(exception.stack);
 			this.logger.warn(exception.toString(), 'Moka.handle');
 		}
 	},
@@ -184,7 +200,7 @@ Moka.prototype=
 	{
 		for(var i=0;i<this.modules.commands.length;i++)
 		{
-			if(this.modules.commands[i].name == name)
+			if(this.modules.commands[i].name == name && this.permissionManager.hasPermission(message.getSender(), this.modules.commands[i]))
 			{
 				this.modules.commands[i].callback.call(this, message, this.commands[i], params);
 				return;
