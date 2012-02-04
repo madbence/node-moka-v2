@@ -2,7 +2,7 @@ var EventDispatcher=function(moka,logger)
 {
 	logger=logger||console;
 	this.logger=logger;
-	this.mokaInstanc=moka;
+	this.mokaInstance=moka;
 }
 
 EventDispatcher.prototype=
@@ -19,7 +19,7 @@ EventDispatcher.prototype=
 			{
 				if(typeof this.listeners[label][i] === 'function')
 				{
-					this.listeners[label][i]([this.mokaInstance].concat(args));
+					this.listeners[label][i].apply(this, [this.mokaInstance].concat(args));
 				}
 				else
 				{

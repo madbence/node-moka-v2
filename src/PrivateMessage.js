@@ -22,6 +22,14 @@ PrivateMessage.prototype=
 	'getRawMessage': function()
 	{
 		return this.rawMessage;
+	},
+	'process': function(moka)
+	{
+		var prefix=moka.config.getValue('commands.prefix');
+		if(prefix && this.rawMessage.indexOf(prefix) === 0)
+		{
+			moka.runCommand(this.rawMessage.substr(prefix.length), this.rawMessage.split(' ').slice(1));
+		}
 	}
 }
 

@@ -11,18 +11,6 @@ var Moka=function(config)
 	var that=this;
 	this.config=config;
 	this.init();
-	if(config.getValue('listeners.onConnect.autojoin.join'))
-	{
-		var autojoin=config.getValue('listeners.onConnect.autojoin.channels');
-		this.on('welcome', function()
-		{
-			that.logger.log('Autojoining: '+autojoin.join(','), 'Moka.autojoin');
-			for(var i=0;i<autojoin.length;i++)
-			{
-				that.response(IRC.join(autojoin[i]));
-			}
-		});
-	}
 	this.login();
 }
 
@@ -164,6 +152,7 @@ Moka.prototype=
 	},
 	'response': function(message, label)
 	{
+		this.emit('response', message, label);
 		this.responseHandler(message, label);
 	},
 	'setResponseHandler': function(handler)
