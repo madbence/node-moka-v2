@@ -187,6 +187,7 @@ Moka.prototype=
 			if(this.modules.commands[i].name == name)
 			{
 				this.modules.commands[i].callback.call(this, message, this.commands[i], params);
+				return;
 			}
 		}
 		this.logger.warn('Command not found. (\''+name+'\' from '+message.getNick()+')', 'Moka.command');
