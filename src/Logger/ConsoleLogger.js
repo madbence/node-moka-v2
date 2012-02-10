@@ -2,11 +2,11 @@ var util=require('../Util.js');
 var arrayUtil=require('../../lib/array.js');
 var handler=
 {
-	'formatMessage': function(type, message, label)
+	'formatMessage': function(type, message, label, location)
 	{
 		var date=new Date();
 		var dateFormat=util.dateFormatter(date, '[%H:%i:%s]');
-		var message=dateFormat+' '+type+(label?'('+label+')':'')+': '+message;
+		var message=dateFormat+' '+type+(label?'('+label+')':'')+': '+message+(location?'('+location+')':'');
 		return message;
 	},
 	'log': function(message, label)
@@ -34,7 +34,15 @@ var handler=
 	{
 		if(this.canLog(type, label))
 		{
-			console.log(this.formatMessage(type, message, label));
+			try
+			{
+				throw new Error();
+			}
+			catch(e)
+			{
+				var location=e.stack.match(/at ((.*?) )\((.*?)\)/g)[3];
+				console.log(this.formatMessage(type, message, label, location));
+			}
 		}
 	},
 	'canLog': function(type, label)
