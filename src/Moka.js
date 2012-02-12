@@ -24,6 +24,19 @@ Moka.prototype=
 		this.initModules();
 		this.initPermissionManager();
 	},
+	'initDevice': function(type, name)
+	{
+		if(this.logger)
+		{
+			this.logger.log('Initialising device \''+type+'/'+name+'\'', 'Moka.init');
+		}
+		if(config.hasValue(type+'.use'))
+		{
+			var deviceName=config.getValue(type+'.use');
+			var deviceClass=require('./'+type+'/'+deviceName+'.js').handler;
+			this[type]=new deviceClass();
+		}
+	},
 	'initLogger': function()
 	{
 		var config=this.config;

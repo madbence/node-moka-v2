@@ -25,6 +25,12 @@ var sendBack=function(message, other)
 		process.send(other);
 	}
 }
+var QueueManager=require('./Queue.js').QueueManager;
+var messageQueue=new QueueManager(sendBack);
+setInterval(function()
+{
+	messageQueue.tick();
+}, 2000);
 
 /**
  * Reads the application config
@@ -44,7 +50,10 @@ var Config=require('./Config.js').Config;
  */
 var config=new Config(configData);
 //Moka sends its responses to this function
-config.setValue('connection.handler', sendBack);
+config.setValue('connection.handler', function(message, label)
+{
+	messageQueue.add(message, label);
+});
 
 /**
  * Moka is the soul of the bot
@@ -86,5 +95,5 @@ process.on('message', function(message)
 
 process.on('uncaughtException', function(e)
 {
-	app.logger.error('UNCAUGHT EXCEPTION: '+e);
+	app.logger.error('UNCAUGHT EXCEPTION: '+e.stack);
 });

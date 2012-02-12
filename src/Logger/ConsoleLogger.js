@@ -34,15 +34,8 @@ var handler=
 	{
 		if(this.canLog(type, label))
 		{
-			try
-			{
-				throw new Error();
-			}
-			catch(e)
-			{
-				var location=e.stack.match(/at ((.*?) )\((.*?)\)/g)[3];
-				console.log(this.formatMessage(type, message, label, location));
-			}
+			//var location=e.stack.match(/at ((.*?) )\((.*?)\)/g)[3];
+			console.log(this.formatMessage(type, message, label));
 		}
 	},
 	'canLog': function(type, label)
